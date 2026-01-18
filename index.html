@@ -1,0 +1,1348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyGovGuide - Eligibility Portal</title>
+    <style>
+      /* --- CSS STYLES --- */
+      :root {
+        --gov-blue: #000080; /* Navy Blue */
+        --gov-orange: #ff9933; /* Saffron */
+        --gov-green: #138808; /* India Green */
+        --bg-light: #f2f5f9;
+        --white: #ffffff;
+        --text-main: #333333;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-light);
+        color: var(--text-main);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      header {
+        background: var(--white);
+        border-bottom: 4px solid var(--gov-orange);
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--gov-blue);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* Language Select */
+      select {
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+
+      /* Main Container */
+      #app {
+        display: flex;
+        justify-content: center;
+        padding: 2rem 1rem;
+        flex: 1;
+      }
+
+      /* Cards */
+      .card {
+        background: var(--white);
+        padding: 3rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        text-align: center;
+        border-top: 5px solid var(--gov-blue);
+        animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      /* Forms */
+      #app input,
+      #app select.form-control {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px;
+        margin: 0 0 15px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: block;
+        height: 45px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      label {
+        display: block;
+        text-align: left;
+        margin-left: 0;
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+      }
+
+      /* Buttons */
+      .btn {
+        background-color: var(--gov-blue);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #000050;
+      }
+      .btn-text {
+        background: none;
+        color: var(--text-main);
+        width: auto;
+        text-decoration: underline;
+        margin-bottom: 10px;
+      }
+
+      /* Results Grid */
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        width: 100%;
+      }
+
+      .results-container {
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      @media (max-width: 900px) {
+        .results-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 600px) {
+        .results-grid {
+          grid-template-columns: 1fr;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .scheme-card {
+        background: var(--white);
+        margin-bottom: 0;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 6px solid #ccc;
+        position: relative;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .scheme-card.eligible {
+        border-left-color: var(--gov-green);
+      }
+      .scheme-card.not-eligible {
+        border-left-color: #d32f2f;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .eligible .status-badge {
+        background: #e8f5e9;
+        color: var(--gov-green);
+      }
+      .not-eligible .status-badge {
+        background: #ffebee;
+        color: #d32f2f;
+      }
+
+      .official-link {
+        float: right;
+        color: var(--gov-blue);
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      /* Tabs */
+      .tab-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        gap: 15px;
+      }
+      .tab-btn {
+        background: #e0e0e0;
+        color: #333;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+      }
+      .tab-btn.active {
+        background: var(--gov-blue);
+        color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+      }
+
+      /* Chatbot */
+      .chat-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--gov-orange);
+        color: white;
+        padding: 15px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        font-size: 1.5rem;
+      }
+
+      .chat-window {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .chat-header {
+        background: var(--gov-blue);
+        color: white;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .chat-body {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background: #f9f9f9;
+      }
+      .chat-input {
+        display: flex;
+        border-top: 1px solid #ddd;
+      }
+      .chat-input input {
+        border: none;
+        padding: 10px;
+        flex: 1;
+        margin: 0;
+      }
+
+      .msg {
+        padding: 8px 12px;
+        border-radius: 15px;
+        margin-bottom: 8px;
+        max-width: 80%;
+        font-size: 0.9rem;
+      }
+      .msg.bot {
+        background: #e0e0e0;
+        align-self: flex-start;
+      }
+      .msg.user {
+        background: #bbdefb;
+        align-self: flex-end;
+        margin-left: auto;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      footer {
+        background: var(--gov-blue);
+        color: white;
+        text-align: center;
+        padding: 1.5rem;
+        margin-top: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo"><span>🏛️</span> MyGovGuide</div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button class="btn" style="width: auto; padding: 8px 15px; font-size: 0.9rem;" onclick="switchToLogin()">Login / Register</button>
+        <span style="font-size: 0.9rem;">Language:</span>
+        <select id="langSelect" onchange="changeLanguage()">
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+          <option value="ta">தமிழ்</option>
+        </select>
+      </div>
+    </header>
+
+    <div id="app"></div>
+
+    <button class="chat-btn" onclick="toggleChat()">💬</button>
+    <div class="chat-window" id="chatWindow">
+      <div class="chat-header">
+        <span>Your Assistance</span>
+        <span style="cursor: pointer" onclick="toggleChat()">✖</span>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <div class="msg bot">Hi There! How may I help you?</div>
+      </div>
+      <div class="chat-input">
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Type here..."
+          onkeypress="handleChatKey(event)"
+        />
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2026 MyGovGuide. Empowering Citizens with Government Schemes.</p>
+    </footer>
+
+    <script>
+      // --- DATA & CONFIG ---
+      const translations = {
+        en: {
+          title: "Login to MyGovGuide",
+          subtitle: "Check your eligibility for Govt Schemes",
+          phonePH: "Enter Mobile Number (+91)",
+          passwordPH: "Enter Password",
+          loginBtn: "Login Securely",
+          enterDetails: "Enter Your Details",
+          age: "Age",
+          income: "Annual Family Income (₹)",
+          category: "Community",
+          gender: "Gender",
+          maritalStatus: "Marital Status",
+          religion: "Religion",
+          isDisabled: "Differently Abled?",
+          education: "Education Level",
+          state: "State",
+          checkBtn: "Check Eligibility",
+          resultsTitle: "Your Scheme Results",
+          back: "← Go Back",
+          eligible: "Eligible",
+          notEligible: "Not Eligible",
+          link: "Apply Now",
+          registerTitle: "Register New User",
+          registerBtn: "Register",
+          noAccount: "New User? Register Here",
+          haveAccount: "Already have an account? Login",
+          smsBtn: "Send SMS",
+          smsSent: "SMS Sent!",
+          schemesTab: "Schemes",
+          coursesTab: "Courses",
+          male: "Male",
+          female: "Female",
+          other: "Other",
+          single: "Single",
+          married: "Married",
+          yes: "Yes",
+          no: "No",
+          eduOptions: {
+            below10: "Below 10th",
+            pass10: "10th Pass",
+            pass12: "12th Pass",
+            ug: "Undergraduate",
+            pg: "Masters Degree",
+            phd: "Doctoral",
+          },
+        },
+        hi: {
+          title: "सरकारी सेवा में लॉग इन करें",
+          subtitle: "सरकारी योजनाओं के लिए अपनी पात्रता जाँचें",
+          phonePH: "मोबाइल नंबर दर्ज करें (+91)",
+          passwordPH: "पासवर्ड दर्ज करें",
+          loginBtn: "लॉग इन करें",
+          enterDetails: "अपना विवरण दर्ज करें",
+          age: "आयु",
+          income: "वार्षिक पारिवारिक आय (₹)",
+          category: "समुदाय",
+          gender: "लिंग",
+          maritalStatus: "वैवाहिक स्थिति",
+          religion: "धर्म",
+          isDisabled: "दिव्यांग?",
+          education: "शिक्षा स्तर",
+          state: "राज्य",
+          checkBtn: "पात्रता जाँचें",
+          resultsTitle: "आपकी योजना परिणाम",
+          back: "← वापस",
+          eligible: "पात्र हैं",
+          notEligible: "पात्र नहीं",
+          link: "आवेदन करें",
+          registerTitle: "नया उपयोगकर्ता पंजीकरण",
+          registerBtn: "पंजीकरण करें",
+          noAccount: "नया उपयोगकर्ता? यहाँ रजिस्टर करें",
+          haveAccount: "क्या आपके पास पहले से एक खाता मौजूद है? लॉग इन करें",
+          smsBtn: "एसएमएस भेजें",
+          smsSent: "एसएमएस भेजा गया!",
+          schemesTab: "योजनाएं",
+          coursesTab: "पाठ्यक्रम",
+          male: "पुरुष",
+          female: "महिला",
+          other: "अन्य",
+          single: "अविवाहित",
+          married: "विवाहित",
+          yes: "हाँ",
+          no: "नहीं",
+          eduOptions: {
+            below10: "10वीं से नीचे",
+            pass10: "10वीं पास",
+            pass12: "12वीं पास",
+            ug: "स्नातक",
+            pg: "स्नातकोत्तर",
+            phd: "डॉक्टरेट",
+          },
+        },
+        ta: {
+          title: "GovtSewa உள்நுழைய",
+          subtitle: "அரசு திட்டங்களுக்கான தகுதியை சரிபார்க்கவும்",
+          phonePH: "மொபைல் எண் (+91)",
+          passwordPH: "கடவுச்சொல்லை உள்ளிடவும்",
+          loginBtn: "உள்நுழைய",
+          enterDetails: "உங்கள் விவரங்களை உள்ளிடவும்",
+          age: "வயது",
+          income: "ஆண்டு வருமானம் (₹)",
+          category: "சமூகம்",
+          gender: "பாலினம்",
+          maritalStatus: "திருமண நிலை",
+          religion: "மதம்",
+          isDisabled: "மாற்றுத்திறனாளியா?",
+          education: "கல்வி தகுதி",
+          state: "மாநிலம்",
+          checkBtn: "தகுதியை சரிபார்க்கவும்",
+          resultsTitle: "உங்கள் முடிவுகள்",
+          back: "← பின் செல்ல",
+          eligible: "தகுதியுடையவர்",
+          notEligible: "தகுதியற்றவர்",
+          link: "விண்ணப்பிக்க",
+          registerTitle: "புதிய பயனர் பதிவு",
+          registerBtn: "பதிவு",
+          noAccount: "புதிய பயனரா? இங்கே பதிவு செய்யுங்கள்",
+          haveAccount: "ஏற்கனவே கணக்கு உள்ளதா? உள்நுழைய",
+          smsBtn: "SMS அனுப்பு",
+          smsSent: "SMS அனுப்பப்பட்டது!",
+          schemesTab: "திட்டங்கள்",
+          coursesTab: "பாடநெறிகள்",
+          male: "ஆண்",
+          female: "பெண்",
+          other: "மற்றவை",
+          single: "திருமணமாகாதவர்",
+          married: "திருமணமானவர்",
+          yes: "ஆம்",
+          no: "இல்லை",
+          eduOptions: {
+            below10: "10 ஆம் வகுப்புக்கு கீழே",
+            pass10: "10 ஆம் வகுப்பு தேர்ச்சி",
+            pass12: "12 ஆம் வகுப்பு தேர்ச்சி",
+            ug: "இளங்கலை",
+            pg: "முதுகலை",
+            phd: "டாக்டர் பட்டம்",
+          },
+        },
+      };
+
+      const schemes = [
+        {
+          id: 1,
+          name: "PM Kisan Samman Nidhi",
+          desc: "Rs 6000/year for farmers.",
+          link: "https://pmkisan.gov.in",
+          rules: {
+            minAge: 18,
+            maxIncome: 2000000,
+            cats: ["General", "OBC", "SC", "ST"],
+          },
+        },
+        {
+          id: 2,
+          name: "Post Matric Scholarship (SC)",
+          desc: "Education aid for SC students.",
+          link: "https://socialjustice.gov.in",
+          rules: { minAge: 16, maxIncome: 250000, cats: ["SC"] },
+        },
+        {
+          id: 3,
+          name: "UPSC Civil Services",
+          desc: "National Competitive Exam.",
+          link: "https://upsc.gov.in",
+          rules: {
+            minAge: 21,
+            maxIncome: 100000000,
+            cats: ["General", "OBC", "SC", "ST"],
+            minEdu: "ug",
+          },
+        },
+        {
+          id: 4,
+          name: "Kalaignar Magalir Urimai Thogai",
+          desc: "₹1000/month for women heads of households.",
+          link: "https://kmut.tn.gov.in",
+          rules: {
+            minAge: 21,
+            maxIncome: 250000,
+            cats: ["General", "OBC", "SC", "ST"],
+            gender: "Female",
+          },
+        },
+        {
+          id: 5,
+          name: "Pudhumai Penn Scheme",
+          desc: "₹1000/month for girl students from govt schools.",
+          link: "https://www.pudhumaipenn.tn.gov.in",
+          rules: {
+            minAge: 17,
+            maxIncome: 100000000,
+            cats: ["General", "OBC", "SC", "ST"],
+            gender: "Female",
+          },
+        },
+        {
+          id: 6,
+          name: "TN Chief Minister's Health Insurance",
+          desc: "Free medical treatment up to ₹5 Lakhs.",
+          link: "https://www.cmchistn.com",
+          rules: {
+            minAge: 0,
+            maxIncome: 120000,
+            cats: ["General", "OBC", "SC", "ST"],
+          },
+        },
+        {
+          id: 7,
+          name: "Dr. Muthulakshmi Reddy Maternity Benefit",
+          desc: "Financial assistance of ₹18,000 for pregnant women.",
+          link: "https://picme.tn.gov.in",
+          rules: { minAge: 19, maxIncome: 100000, cats: ["General", "OBC", "SC", "ST"], gender: "Female" }
+        },
+        {
+          id: 8,
+          name: "TN Old Age Pension Scheme",
+          desc: "Monthly pension of ₹1000 for senior citizens.",
+          link: "https://tnega.tn.gov.in",
+          rules: { minAge: 60, maxIncome: 50000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 9,
+          name: "Differently Abled Pension Scheme",
+          desc: "Monthly assistance for differently abled persons.",
+          link: "https://scd.tn.gov.in",
+          rules: { minAge: 0, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"], isDisabled: true }
+        },
+        {
+          id: 10,
+          name: "Unemployment Assistance Scheme",
+          desc: "Financial aid for unemployed youth waiting for jobs.",
+          link: "https://tnvelaivaaippu.gov.in",
+          rules: { minAge: 18, maxIncome: 200000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 11,
+          name: "Widow Pension Scheme",
+          desc: "Financial support for destitute widows.",
+          link: "https://tnega.tn.gov.in",
+          rules: { minAge: 18, maxIncome: 100000, cats: ["General", "OBC", "SC", "ST"], gender: "Female" }
+        },
+        {
+          id: 12,
+          name: "Moovalur Ramamirtham Marriage Assistance",
+          desc: "Financial aid and gold coin for daughters' marriage.",
+          link: "https://tnsocialwelfare.tn.gov.in",
+          rules: { minAge: 18, maxIncome: 72000, cats: ["General", "OBC", "SC", "ST"], gender: "Female" }
+        },
+        {
+          id: 13,
+          name: "Chief Minister’s Girl Child Protection",
+          desc: "Fixed deposit for girl children to ensure education.",
+          link: "https://tnsocialwelfare.tn.gov.in",
+          rules: { minAge: 0, maxIncome: 72000, cats: ["General", "OBC", "SC", "ST"], gender: "Female" }
+        },
+        {
+          id: 14,
+          name: "Free Laptop Scheme",
+          desc: "Free laptops for students in Govt/Aided schools.",
+          link: "https://www.tn.gov.in",
+          rules: { minAge: 14, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"], minEdu: "pass10" }
+        },
+        {
+          id: 15,
+          name: "Naan Mudhalvan Scheme",
+          desc: "Skill development and career guidance for youth.",
+          link: "https://www.naanmudhalvan.tn.gov.in",
+          rules: { minAge: 17, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 16,
+          name: "TAHDCO Economic Development",
+          desc: "Loans and subsidies for SC/ST entrepreneurs.",
+          link: "http://tahdco.tn.gov.in",
+          rules: { minAge: 18, maxIncome: 300000, cats: ["SC", "ST"] }
+        },
+        {
+          id: 17,
+          name: "UYEGP Loan Scheme",
+          desc: "Loan subsidy for unemployed youth to start business.",
+          link: "https://msmeonline.tn.gov.in",
+          rules: { minAge: 18, maxIncome: 500000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 18,
+          name: "NEEDS Scheme",
+          desc: "Entrepreneurship scheme for educated youth.",
+          link: "https://msmeonline.tn.gov.in",
+          rules: { minAge: 21, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"], minEdu: "ug" }
+        },
+        {
+          id: 19,
+          name: "Green House Scheme (Pasumai Veedu)",
+          desc: "Construction of solar-powered green houses.",
+          link: "https://tnrd.gov.in",
+          rules: { minAge: 21, maxIncome: 300000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 20,
+          name: "TN Farmers Social Security Scheme",
+          desc: "Pension and accident relief for farmers.",
+          link: "https://www.tn.gov.in",
+          rules: { minAge: 18, maxIncome: 100000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 21,
+          name: "Destitute Deserted Wives Pension",
+          desc: "Pension for wives deserted by husbands.",
+          link: "https://tnega.tn.gov.in",
+          rules: { minAge: 30, maxIncome: 100000, cats: ["General", "OBC", "SC", "ST"], gender: "Female" }
+        },
+        {
+          id: 22,
+          name: "Inter-caste Marriage Assistance",
+          desc: "Incentive for inter-caste marriages.",
+          link: "https://tnsocialwelfare.tn.gov.in",
+          rules: { minAge: 18, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 23,
+          name: "Satyavani Muthu Free Sewing Machine",
+          desc: "Free sewing machines for widows and poor women.",
+          link: "https://tnsocialwelfare.tn.gov.in",
+          rules: { minAge: 20, maxIncome: 72000, cats: ["General", "OBC", "SC", "ST"], gender: "Female" }
+        },
+        {
+          id: 24,
+          name: "Amma Two Wheeler Scheme",
+          desc: "Subsidy for working women to buy two-wheelers.",
+          link: "https://www.tn.gov.in",
+          rules: { minAge: 18, maxIncome: 250000, cats: ["General", "OBC", "SC", "ST"], gender: "Female" }
+        },
+        {
+          id: 25,
+          name: "TN Urban Employment Scheme",
+          desc: "Employment opportunities for urban poor.",
+          link: "https://tn.gov.in",
+          rules: { minAge: 18, maxIncome: 200000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 26,
+          name: "Sanitary Napkin Scheme",
+          desc: "Free sanitary napkins for adolescent girls.",
+          link: "https://www.tn.gov.in",
+          rules: { minAge: 10, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"], gender: "Female" }
+        },
+        {
+          id: 27,
+          name: "Nutritious Meal Scheme",
+          desc: "Free noon meals for school children.",
+          link: "https://www.tn.gov.in",
+          rules: { minAge: 5, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 28,
+          name: "Free Bus Pass for Students",
+          desc: "Free travel for school and college students.",
+          link: "https://www.tn.gov.in",
+          rules: { minAge: 5, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 29,
+          name: "Textile Entrepreneurship Scheme",
+          desc: "Support for powerloom and textile entrepreneurs.",
+          link: "https://www.tn.gov.in",
+          rules: { minAge: 21, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 30,
+          name: "Uzhavar Sandhai",
+          desc: "Direct market access for farmers.",
+          link: "https://agritech.tnau.ac.in",
+          rules: { minAge: 18, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 31,
+          name: "Illam Thedi Kalvi",
+          desc: "Education at doorstep for children.",
+          link: "https://illamthedikalvi.tnschools.gov.in",
+          rules: { minAge: 5, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 32,
+          name: "Makkalai Thedi Maruthuvam",
+          desc: "Healthcare services at doorstep.",
+          link: "https://tn.gov.in",
+          rules: { minAge: 45, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        }
+      ];
+
+      const courses = [
+        {
+          id: 101,
+          name: "PMKVY Skill Training",
+          desc: "Free industry skill training & certification.",
+          link: "https://www.pmkvyofficial.org",
+          rules: {
+            minAge: 15,
+            maxIncome: 100000000,
+            cats: ["General", "OBC", "SC", "ST"],
+          },
+        },
+        {
+          id: 102,
+          name: "NPTEL Online Courses",
+          desc: "Free IIT/IISc certification courses.",
+          link: "https://nptel.ac.in",
+          rules: {
+            minAge: 13,
+            maxIncome: 100000000,
+            cats: ["General", "OBC", "SC", "ST"],
+            minEdu: "pass12",
+          },
+        },
+        {
+          id: 103,
+          name: "Swayam Learning",
+          desc: "Free online courses by Govt of India.",
+          link: "https://swayam.gov.in",
+          rules: {
+            minAge: 10,
+            maxIncome: 100000000,
+            cats: ["General", "OBC", "SC", "ST"],
+          },
+        },
+        {
+          id: 104,
+          name: "TNSDC Skill Training",
+          desc: "Free skill training by TN Govt.",
+          link: "https://www.tnskill.tn.gov.in",
+          rules: { minAge: 18, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 105,
+          name: "IBM SkillsBuild",
+          desc: "Free digital learning platform by IBM.",
+          link: "https://skillsbuild.org",
+          rules: { minAge: 13, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 106,
+          name: "Google Digital Unlocked",
+          desc: "Free digital marketing courses by Google.",
+          link: "https://learndigital.withgoogle.com",
+          rules: { minAge: 15, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 107,
+          name: "Microsoft Learn",
+          desc: "Free technical documentation and training.",
+          link: "https://learn.microsoft.com",
+          rules: { minAge: 13, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 108,
+          name: "Infosys Springboard",
+          desc: "Corporate grade learning for students.",
+          link: "https://infyspringboard.onwingspan.com",
+          rules: { minAge: 10, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 109,
+          name: "TCS iON Career Edge",
+          desc: "Free career preparedness course.",
+          link: "https://learning.tcsion.com",
+          rules: { minAge: 18, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 110,
+          name: "Udemy Free Courses",
+          desc: "Various free courses on programming & business.",
+          link: "https://www.udemy.com/courses/free/",
+          rules: { minAge: 13, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 111,
+          name: "Great Learning Academy",
+          desc: "Free certificate courses in Data Science & AI.",
+          link: "https://www.mygreatlearning.com/academy",
+          rules: { minAge: 16, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 112,
+          name: "Simplilearn SkillUp",
+          desc: "Free online courses to boost your career.",
+          link: "https://www.simplilearn.com/skillup-free-online-courses",
+          rules: { minAge: 18, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+        {
+          id: 113,
+          name: "FreeCodeCamp",
+          desc: "Learn to code for free.",
+          link: "https://www.freecodecamp.org",
+          rules: { minAge: 12, maxIncome: 100000000, cats: ["General", "OBC", "SC", "ST"] }
+        },
+      ];
+
+      // --- BACKEND CONFIGURATION ---
+      const API_URL = "http://localhost:5000/api";
+
+      // --- STATE ---
+      let currentLang = "en";
+      let currentPage = "login"; // login, input, results
+      let userDetails = {
+        age: "",
+        income: "",
+        category: "General",
+        gender: "Male",
+        maritalStatus: "Single",
+        religion: "Hindu",
+        isDisabled: false,
+        education: "pass12",
+      };
+      let userPhone = "";
+      let currentTab = "schemes";
+
+      // --- INITIAL RENDER ---
+      render();
+
+      // --- RENDER FUNCTION (ROUTER) ---
+      function render() {
+        const app = document.getElementById("app");
+        const t = translations[currentLang];
+        app.innerHTML = ""; // Clear current content
+
+        if (currentPage === "login") {
+          app.innerHTML = `
+                    <div class="card" style="max-width: 400px;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">🦁</div>
+                        <h2>${t.title}</h2>
+                        <p>${t.subtitle}</p>
+                        <form onsubmit="handleLogin(event)">
+                            <input type="text" id="loginPhone" placeholder="${t.phonePH}" required minlength="10" maxlength="10" pattern="[0-9]+">
+                            <input type="password" id="loginPassword" placeholder="${t.passwordPH}" required>
+                            <button type="submit" class="btn">${t.loginBtn}</button>
+                        </form>
+                        <p style="margin-top: 15px;">
+                            <a href="#" onclick="switchToRegister()" style="color: var(--gov-blue); text-decoration: none;">${t.noAccount}</a>
+                        </p>
+                    </div>
+                `;
+        } else if (currentPage === "register") {
+          app.innerHTML = `
+                    <div class="card" style="max-width: 400px;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">📝</div>
+                        <h2>${t.registerTitle}</h2>
+                        <form onsubmit="handleRegister(event)">
+                            <input type="text" id="regPhone" placeholder="${t.phonePH}" required minlength="10" maxlength="10" pattern="[0-9]+">
+                            <input type="password" id="regPassword" placeholder="${t.passwordPH}" required>
+                            <button type="submit" class="btn">${t.registerBtn}</button>
+                        </form>
+                        <p style="margin-top: 15px;">
+                            <a href="#" onclick="switchToLogin()" style="color: var(--gov-blue); text-decoration: none;">${t.haveAccount}</a>
+                        </p>
+                    </div>
+                `;
+        } else if (currentPage === "input") {
+          app.innerHTML = `
+                    <div class="card">
+                        <h2>${t.enterDetails}</h2>
+                        <form onsubmit="handleCheck(event)">
+                            <div class="form-grid">
+                                <div>
+                                    <label>${t.age} (DD-MM-YYYY)</label>
+                                    <input type="date" id="dobInput" required placeholder="dd-mm-yyyy">
+                                </div>
+                                
+                                <div>
+                                    <label>${t.gender}</label>
+                                    <select id="genderInput" class="form-control">
+                                        <option value="Male">${t.male}</option>
+                                        <option value="Female">${t.female}</option>
+                                        <option value="Other">${t.other}</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label>${t.maritalStatus}</label>
+                                    <select id="maritalInput" class="form-control">
+                                        <option value="Single">${t.single}</option>
+                                        <option value="Married">${t.married}</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label>${t.income}</label>
+                                    <input type="number" id="incomeInput" required placeholder="Ex: 50000">
+                                </div>
+                                
+                                <div>
+                                    <label>${t.religion}</label>
+                                    <select id="religionInput" class="form-control">
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Muslim">Muslim</option>
+                                        <option value="Christian">Christian</option>
+                                        <option value="Sikh">Sikh</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label>${t.category}</label>
+                                    <select id="catInput" class="form-control">
+                                        <option value="General">General</option>
+                                        <option value="OBC">OBC</option>
+                                        <option value="SC">SC</option>
+                                        <option value="ST">ST</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label>${t.education}</label>
+                                    <select id="eduInput" class="form-control">
+                                        <option value="below10">${t.eduOptions.below10}</option>
+                                        <option value="pass10">${t.eduOptions.pass10}</option>
+                                        <option value="pass12">${t.eduOptions.pass12}</option>
+                                        <option value="ug">${t.eduOptions.ug}</option>
+                                        <option value="pg">${t.eduOptions.pg}</option>
+                                        <option value="phd">${t.eduOptions.phd}</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label>${t.isDisabled}</label>
+                                    <select id="disabledInput" class="form-control">
+                                        <option value="false">${t.no}</option>
+                                        <option value="true">${t.yes}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn">${t.checkBtn}</button>
+                        </form>
+                    </div>
+                `;
+        } else if (currentPage === "results") {
+          const dataList = currentTab === "schemes" ? schemes : courses;
+          let resultsHTML = dataList
+            .map((s) => {
+              const isEligible = checkLogic(s);
+              const statusClass = isEligible ? "eligible" : "not-eligible";
+              const statusText = isEligible ? t.eligible : t.notEligible;
+              const icon = isEligible ? "✅" : "❌";
+
+              return `
+                        <div class="scheme-card ${statusClass}">
+                            <div>
+                                <h3>${s.name}</h3>
+                                <p>${s.desc}</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="status-badge">${icon} ${statusText}</span>
+                                ${isEligible ? `<a href="${s.link}" target="_blank" class="official-link">${t.link} &rarr;</a>` : ""}
+                            </div>
+                        </div>
+                    `;
+            })
+            .join("");
+
+          app.innerHTML = `
+                    <div class="results-container">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <button class="btn btn-text" onclick="goBack()" style="width: auto; margin: 0;">${t.back}</button>
+                            <button class="btn" onclick="handleManualSMS()" style="width: auto; background-color: var(--gov-green); margin: 0;">📩 ${t.smsBtn}</button>
+                        </div>
+                        <div class="tab-container">
+                            <button class="tab-btn ${currentTab === "schemes" ? "active" : ""}" onclick="switchTab('schemes')">${t.schemesTab}</button>
+                            <button class="tab-btn ${currentTab === "courses" ? "active" : ""}" onclick="switchTab('courses')">${t.coursesTab}</button>
+                        </div>
+                        <h2 style="text-align: center;">${t.resultsTitle}</h2>
+                        <div class="results-grid">
+                            ${resultsHTML}
+                        </div>
+                    </div>
+                `;
+
+          // Add Swipe Listeners
+          setTimeout(() => {
+            const container = document.querySelector(".results-container");
+            if (container) {
+              let touchstartX = 0;
+              let touchendX = 0;
+              container.addEventListener(
+                "touchstart",
+                (e) => (touchstartX = e.changedTouches[0].screenX),
+                { passive: true },
+              );
+              container.addEventListener(
+                "touchend",
+                (e) => {
+                  touchendX = e.changedTouches[0].screenX;
+                  handleSwipe();
+                },
+                { passive: true },
+              );
+
+              function handleSwipe() {
+                if (touchendX < touchstartX - 50) {
+                  // Swipe Left -> Go to Courses
+                  if (currentTab === "schemes") switchTab("courses");
+                }
+                if (touchendX > touchstartX + 50) {
+                  // Swipe Right -> Go to Schemes
+                  if (currentTab === "courses") switchTab("schemes");
+                }
+              }
+            }
+          }, 0);
+        }
+      }
+
+      // --- LOGIC HANDLERS ---
+      function changeLanguage() {
+        currentLang = document.getElementById("langSelect").value;
+        render();
+      }
+
+      function switchTab(tab) {
+        currentTab = tab;
+        render();
+      }
+
+      function switchToRegister() {
+        currentPage = "register";
+        render();
+      }
+
+      function switchToLogin() {
+        currentPage = "login";
+        render();
+      }
+
+      async function handleLogin(e) {
+        e.preventDefault();
+        const phone = document.getElementById("loginPhone").value;
+        userPhone = phone;
+        const password = document.getElementById("loginPassword").value;
+        const btn = e.target.querySelector("button");
+
+        const originalText = btn.innerText;
+        btn.innerText = "Validating...";
+        btn.disabled = true;
+
+        try {
+          // Attempt to validate with Atlas
+          const isValid = await validateCredentials(phone, password);
+          if (isValid) {
+            currentPage = "input";
+            render();
+          } else {
+            alert("Invalid Credentials. Please try again.");
+          }
+        } catch (error) {
+          console.error("Login Error:", error);
+          alert("Connection error. Proceeding in offline mode for demo.");
+          // Fallback for demo purposes if DB is not configured
+          currentPage = "input";
+          render();
+        } finally {
+          btn.innerText = originalText;
+          btn.disabled = false;
+        }
+      }
+
+      async function handleRegister(e) {
+        e.preventDefault();
+        const phone = document.getElementById("regPhone").value;
+        userPhone = phone;
+        const password = document.getElementById("regPassword").value;
+        const btn = e.target.querySelector("button");
+
+        const originalText = btn.innerText;
+        btn.innerText = "Registering...";
+        btn.disabled = true;
+
+        try {
+          const response = await fetch(`${API_URL}/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone, password }),
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            alert("Registration Successful! Please Login.");
+            switchToLogin();
+          } else {
+            alert(data.message || "Registration failed");
+          }
+        } catch (error) {
+          console.error("Registration Error:", error);
+          alert("Connection error.");
+        } finally {
+          btn.innerText = originalText;
+          btn.disabled = false;
+        }
+      }
+
+      async function handleCheck(e) {
+        e.preventDefault();
+
+        const dob = new Date(document.getElementById("dobInput").value);
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const m = today.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+          age--;
+        }
+        userDetails.age = age;
+
+        userDetails.income = parseInt(
+          document.getElementById("incomeInput").value,
+        );
+        userDetails.category = document.getElementById("catInput").value;
+        userDetails.gender = document.getElementById("genderInput").value;
+        userDetails.maritalStatus =
+          document.getElementById("maritalInput").value;
+        userDetails.religion = document.getElementById("religionInput").value;
+        userDetails.isDisabled =
+          document.getElementById("disabledInput").value === "true";
+        userDetails.education = document.getElementById("eduInput").value;
+
+        // Save search data to Atlas
+        const btn = e.target.querySelector("button");
+        btn.innerText = "Checking...";
+
+        await saveSearchData(userDetails);
+
+        // Send SMS for eligible schemes
+        const eligibleSchemes = schemes.filter((s) => checkLogic(s));
+        if (eligibleSchemes.length > 0) {
+          const smsBody =
+            "GovtSewa: You are eligible for:\n" +
+            eligibleSchemes.map((s) => `- ${s.name}: ${s.link}`).join("\n");
+
+          sendSMS(userPhone, smsBody); // Fire and forget (don't await to keep UI fast)
+        }
+
+        currentPage = "results";
+        render();
+      }
+
+      function goBack() {
+        currentPage = "input";
+        render();
+      }
+
+      async function handleManualSMS() {
+        const dataList = currentTab === "schemes" ? schemes : courses;
+        const eligibleItems = dataList.filter((s) => checkLogic(s));
+        if (eligibleItems.length === 0) {
+          alert("No eligible schemes to send.");
+          return;
+        }
+
+        const smsBody =
+          "GovtSewa Results:\n" +
+          eligibleItems.map((s) => `- ${s.name}`).join("\n");
+
+        const t = translations[currentLang];
+        await sendSMS(userPhone, smsBody);
+
+        alert(t.smsSent);
+      }
+
+      function checkLogic(scheme) {
+        // Education Level Hierarchy
+        const eduMap = {
+            "below10": 0,
+            "pass10": 1,
+            "pass12": 2,
+            "ug": 3,
+            "pg": 4,
+            "phd": 5
+        };
+
+        const ageOk = userDetails.age >= scheme.rules.minAge;
+        const incomeOk = userDetails.income <= scheme.rules.maxIncome;
+        const catOk = scheme.rules.cats.includes(userDetails.category);
+
+        // New Logic Checks
+        const genderOk =
+          !scheme.rules.gender || scheme.rules.gender === userDetails.gender;
+        const disabledOk =
+          scheme.rules.isDisabled === undefined ||
+          scheme.rules.isDisabled === userDetails.isDisabled;
+
+        // Education Check
+        const userEduLevel = eduMap[userDetails.education] || 0;
+        const schemeEduLevel = eduMap[scheme.rules.minEdu] || 0; // Default to 0 (below10) if not specified
+        const eduOk = userEduLevel >= schemeEduLevel;
+
+        return ageOk && incomeOk && catOk && genderOk && disabledOk && eduOk;
+      }
+
+      // --- BACKEND INTEGRATION ---
+      async function validateCredentials(phone, password) {
+        try {
+          const response = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ phone, password }),
+          });
+
+          const data = await response.json();
+          return data.success;
+        } catch (error) {
+          console.error("Backend connection failed:", error);
+          throw error; // Let the caller handle the fallback
+        }
+      }
+
+      async function saveSearchData(details) {
+        try {
+          await fetch(`${API_URL}/save-check`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(details),
+          });
+        } catch (err) {
+          console.error("Failed to save data to Atlas", err);
+        }
+      }
+
+      async function sendSMS(phone, message) {
+        try {
+          await fetch(`${API_URL}/send-sms`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone, message }),
+          });
+          console.log("SMS Request Sent");
+        } catch (err) {
+          console.error("Failed to send SMS", err);
+        }
+      }
+
+      // --- CHATBOT LOGIC ---
+      function toggleChat() {
+        const win = document.getElementById("chatWindow");
+        win.style.display = win.style.display === "flex" ? "none" : "flex";
+      }
+
+      function handleChatKey(e) {
+        if (e.key === "Enter") {
+          const input = document.getElementById("chatInput");
+          const text = input.value;
+          if (!text) return;
+
+          addMsg(text, "user");
+          input.value = "";
+
+          // Simple AI Logic
+          setTimeout(() => {
+            let reply =
+              "I can help you check eligibility. Please fill the form.";
+            if (text.toLowerCase().includes("hello"))
+              reply = "Namaste! How can I assist you?";
+            if (text.toLowerCase().includes("money"))
+              reply = "Schemes like PM Kisan offer financial support.";
+            if (text.toLowerCase().includes("student"))
+              reply = "We have scholarships available for students.";
+            addMsg(reply, "bot");
+          }, 500);
+        }
+      }
+
+      function addMsg(text, sender) {
+        const body = document.getElementById("chatBody");
+        const div = document.createElement("div");
+        div.className = `msg ${sender}`;
+        div.innerText = text;
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+      }
+    </script>
+  </body>
+</html>

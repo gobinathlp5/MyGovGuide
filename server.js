@@ -1,0 +1,106 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const twilio = require('twilio');
+
+// Load environment variables from config.env
+require('dotenv').config({ path: './config.env' });
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.error('MongoDB Connection Error:', err));
+
+// Twilio Client
+const twilioClient = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const MESSAGING_SERVICE_SID = "MGc05835f861b933d05b45f3e58d3c4d9f";
+
+// --- Schemas & Models ---
+
+// User Schema (for Login)
+const userSchema = new mongoose.Schema({
+    phone: { type: String, required: true },
+    password: { type: String, required: true }
+});
+const User = mongoose.model('User', userSchema);
+
+// Eligibility Check Schema (for saving search data)
+const eligibilityCheckSchema = new mongoose.Schema({
+    age: Number,
+    income: Number,
+    category: String,
+    gender: String,
+    maritalStatus: String,
+    religion: String,
+    isDisabled: Boolean,
+    education: String,
+    timestamp: { type: Date, default: Date.now }
+});
+const EligibilityCheck = mongoose.model('EligibilityCheck', eligibilityCheckSchema);
+
+// --- Routes ---
+
+app.post('/api/login', async (req, res) => {
+    const { phone, password } = req.body;
+    try {
+        const user = await User.findOne({ phone, password });
+        if (user) {
+            res.json({ success: true, message: "Login successful" });
+        } else {
+            res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/api/register', async (req, res) => {
+    const { phone, password } = req.body;
+    try {
+        const existingUser = await User.findOne({ phone });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: "User already exists" });
+        }
+        const newUser = new User({ phone, password });
+        await newUser.save();
+        res.json({ success: true, message: "Registration successful" });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/api/save-check', async (req, res) => {
+    try {
+        const newCheck = new EligibilityCheck(req.body);
+        await newCheck.save();
+        res.json({ success: true, message: "Data saved successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/api/send-sms', async (req, res) => {
+    const { phone, message } = req.body;
+    try {
+        await twilioClient.messages.create({
+            body: message,
+            messagingServiceSid: MESSAGING_SERVICE_SID,
+            to: phone.startsWith('+91') ? phone : `+91${phone}`
+        });
+        res.json({ success: true, message: "SMS sent successfully" });
+    } catch (error) {
+        console.error("Twilio Error:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
