@@ -1,16 +1,18 @@
 :root {
-  --primary-blue: #000080; /* Navy Blue */
-  --accent-orange: #ff9933; /* Saffron */
-  --bg-light: #f5f7fa;
-  --text-dark: #333;
+  --gov-blue: #000080; /* Navy Blue */
+  --gov-orange: #ff9933; /* Saffron */
+  --gov-green: #138808; /* India Green */
+  --bg-light: #f2f5f9;
   --white: #ffffff;
+  --text-main: #333333;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--bg-light);
+  color: var(--text-main);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -19,15 +21,13 @@ body {
 /* --- Header --- */
 header {
   background-color: var(--white);
-  border-bottom: 4px solid var(--accent-orange);
-  padding: 15px 0;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  border-bottom: 4px solid var(--gov-orange);
+  padding: 15px; /* Matched to Equira */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  /* Simplified to match Equira direct flex if needed, but keeping container is safer for this layout */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -41,15 +41,15 @@ header {
 
 .logo-text {
   font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--primary-blue);
+  font-weight: bold;
+  color: var(--gov-blue);
 }
 
 .lang-select {
-    padding: 6px;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    color: var(--text-dark);
+    color: var(--text-main);
 }
 
 /* --- Main Card Layout --- */
@@ -57,24 +57,24 @@ main {
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Aligns to top so it grows down */
-  padding: 40px 20px;
+  align-items: flex-start; 
+  padding: 2rem 1rem; /* Matched to Equira #app padding */
 }
 
 .main-card {
-  background: white;
+  background: var(--white);
   width: 100%;
-  max-width: 700px; /* Wider than login to fit Map */
-  padding: 30px;
+  max-width: 800px; /* Matched to Equira .card max-width */
+  padding: 3rem;   /* Matched to Equira .card padding */
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   text-align: center;
-  border-top: 5px solid var(--primary-blue);
+  border-top: 5px solid var(--gov-blue);
 }
 
 .card-header-icon { margin-bottom: 15px; }
-h2 { color: var(--text-dark); margin: 0; }
-.subtitle { color: #666; margin-bottom: 25px; font-size: 0.9rem; }
+h2 { color: var(--text-main); margin: 0; }
+.subtitle { color: #555; margin-bottom: 25px; font-size: 0.9rem; }
 
 /* --- Form Elements --- */
 .input-row {
@@ -87,18 +87,22 @@ h2 { color: var(--text-dark); margin: 0; }
 .input-row input {
     flex: 1;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 45px; /* Matched height */
+    box-sizing: border-box;
 }
 
 .gps-btn {
-    background-color: var(--primary-blue); /* Changed to Blue to match theme */
+    background-color: var(--gov-blue);
     color: white;
     border: none;
     padding: 12px 20px;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: bold; /* Kept bold */
+    font-size: 1rem; /* Matched font size */
+    height: 45px; /* Matched height */
 }
 
 .or-divider { font-size: 0.8rem; color: #888; font-weight: bold; }
@@ -112,56 +116,59 @@ h2 { color: var(--text-dark); margin: 0; }
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: var(--primary-blue);
+    color: var(--text-main); /* Changed from primary-blue to text-main to match standard labels */
+    font-size: 0.9rem;
 }
 
 .filter-row select {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 45px;
+    box-sizing: border-box;
 }
 
 .action-btn {
     width: 100%;
-    background-color: var(--accent-orange);
+    background-color: var(--gov-blue); /* Changed to Blue to match standard 'Search/Login' buttons in Equira */
     color: white;
     border: none;
-    padding: 14px;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: normal; /* Equira buttons are normal weight usually, but bold is fine. Keeping standard. */
     cursor: pointer;
     transition: background 0.3s;
 }
 
-.action-btn:hover { background-color: #e67e22; }
+.action-btn:hover { background-color: #000050; }
 
 /* --- Map & Results --- */
 #map {
     height: 300px;
     width: 100%;
-    border-radius: 5px;
+    border-radius: 4px;
     margin-top: 20px;
-    border: 2px solid #eee;
-    z-index: 1; /* Keep below dropdowns */
+    border: 1px solid #ccc;
+    z-index: 1; 
 }
 
 /* --- Footer --- */
 footer {
-  background-color: var(--primary-blue);
+  background-color: var(--gov-blue);
   color: white;
   text-align: center;
-  padding: 15px;
-  font-size: 0.9rem;
+  padding: 1.5rem; /* Matched to Equira */
+  margin-top: auto;
 }
 
-/* --- Chatbot (kept original functionality, updated colors) --- */
+/* --- Chatbot --- */
 .chatbot-container {
     position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 1000;
 }
 .chat-header {
-    background: var(--primary-blue); color: white; padding: 12px;
+    background: var(--gov-blue); color: white; padding: 10px;
     border-radius: 10px 10px 0 0; cursor: pointer; display: flex;
     justify-content: space-between;
 }
@@ -169,7 +176,7 @@ footer {
 .chat-messages { flex: 1; padding: 10px; overflow-y: auto; background: #f9f9f9; text-align: left;}
 .chat-input { display: flex; border-top: 1px solid #eee; }
 .chat-input input { flex: 1; padding: 10px; border: none; outline: none; }
-.chat-input button { background: white; border: none; color: var(--primary-blue); padding: 0 15px; cursor: pointer; }
+.chat-input button { background: white; border: none; color: var(--gov-blue); padding: 0 15px; cursor: pointer; }
 
 /* Spinner Helper */
 .hidden { display: none; }
@@ -178,14 +185,14 @@ footer {
 .hospital-card {
     background: white;
     margin-top: 15px;
-    padding: 15px;
+    padding: 1.5rem;
     border-radius: 8px;
-    border-left: 5px solid var(--primary-blue);
+    border-left: 6px solid var(--gov-blue);
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     text-align: left;
 }
 
-.hospital-card.emergency { border-left-color: #e74c3c; }
+.hospital-card.emergency { border-left-color: #d32f2f; }
 
 .card-header {
     display: flex;
@@ -194,7 +201,7 @@ footer {
     margin-bottom: 8px;
 }
 
-.h-name { font-weight: bold; font-size: 1.1rem; color: var(--primary-blue); }
+.h-name { font-weight: bold; font-size: 1.1rem; color: var(--gov-blue); }
 .h-dist { background: #eee; padding: 4px 8px; border-radius: 12px; font-size: 0.85rem; }
 .h-details { font-size: 0.9rem; color: #555; line-height: 1.5; }
 

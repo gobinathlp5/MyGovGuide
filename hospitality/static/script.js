@@ -1,3 +1,15 @@
+// Back Button Handler - Check for returnUrl parameter
+function goBack() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnUrl = urlParams.get('returnUrl');
+    
+    if (returnUrl) {
+        window.location.href = returnUrl;
+    } else {
+        window.history.back();
+    }
+}
+
 let map;
 let markers = [];
 let userMarker = null;
