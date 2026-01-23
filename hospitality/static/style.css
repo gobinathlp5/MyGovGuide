@@ -12,6 +12,14 @@ body {
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--bg-light);
+  
+  /* Rural Health Connect Background */
+  background-image: url("https://wallpaperbat.com/img/8612024-medical-background.jpghttps://wallpaperbat.com/img/8612024-medical-background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+
   color: var(--text-main);
   display: flex;
   flex-direction: column;
