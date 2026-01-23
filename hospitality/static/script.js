@@ -6,7 +6,8 @@ function goBack() {
     if (returnUrl) {
         window.location.href = returnUrl;
     } else {
-        window.history.back();
+        // Redirect to Our Services page (Main Dashboard)
+        window.location.href = 'http://127.0.0.1:5500/index.html';
     }
 }
 
