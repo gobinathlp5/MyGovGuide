@@ -1684,7 +1684,7 @@
         win.style.display = win.style.display === "flex" ? "none" : "flex";
       }
 
-      function handleChatKey(e) {
+      async function handleChatKey(e) {
         if (e.key === "Enter") {
           const input = document.getElementById("chatInput");
           const text = input.value;
@@ -1693,18 +1693,32 @@
           addMsg(text, "user");
           input.value = "";
 
-          // Simple AI Logic
-          setTimeout(() => {
-            let reply =
-              "I can help you check eligibility. Please fill the form.";
-            if (text.toLowerCase().includes("hello"))
-              reply = "Namaste! How can I assist you?";
-            if (text.toLowerCase().includes("money"))
-              reply = "Schemes like PM Kisan offer financial support.";
-            if (text.toLowerCase().includes("student"))
-              reply = "We have scholarships available for students.";
-            addMsg(reply, "bot");
-          }, 500);
+          // Call backend API (Gemini)
+          try {
+            // Show loading or typing indicator could be good, but for now simple request
+            const response = await fetch("http://localhost:5000/api/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message: text }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+              addMsg(data.reply, "bot");
+            } else {
+              addMsg(
+                "Sorry, I encountered an error: " +
+                  (data.error || "Unknown error"),
+                "bot",
+              );
+            }
+          } catch (error) {
+            console.error("Chat Error:", error);
+            addMsg(
+              "Sorry, I can't connect to the server right now. Make sure the Node.js server is running.",
+              "bot",
+            );
+          }
         }
       }
 

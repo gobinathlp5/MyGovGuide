@@ -156,15 +156,8 @@ function renderResults(data) {
 
 // 4. Chatbot Logic
 function toggleChat() {
-    const body = document.getElementById('chat-body');
-    const icon = document.getElementById('chat-icon');
-    if (body.style.display === 'flex') {
-        body.style.display = 'none';
-        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-    } else {
-        body.style.display = 'flex';
-        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-    }
+    const win = document.getElementById("chatWindow");
+    win.style.display = win.style.display === "flex" ? "none" : "flex";
 }
 
 function handleChatKey(e) {
@@ -172,11 +165,11 @@ function handleChatKey(e) {
 }
 
 function sendChatMessage() {
-    const input = document.getElementById('chat-input-text');
+    const input = document.getElementById('chatInput');
     const msg = input.value.trim().toLowerCase();
     if (!msg) return;
 
-    const chatBox = document.getElementById('chat-messages');
+    const chatBox = document.getElementById('chatBody');
     
     // User Message
     chatBox.innerHTML += `<div class="msg user">${input.value}</div>`;

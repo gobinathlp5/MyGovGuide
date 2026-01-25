@@ -106,28 +106,25 @@
       </p>
     </footer>
 
-    <div class="chatbot-container">
-      <div class="chat-header" onclick="toggleChat()">
-        <div>
-          <i class="fas fa-robot"></i> <span id="t-ai-help">AI Assistant</span>
-        </div>
-        <i class="fas fa-chevron-up" id="chat-icon"></i>
+    <button class="chat-btn" onclick="toggleChat()">💬</button>
+    <div class="chat-window" id="chatWindow">
+      <div class="chat-header">
+        <span
+          ><i class="fas fa-robot"></i>
+          <span id="t-ai-help">AI Assistant</span></span
+        >
+        <span style="cursor: pointer" onclick="toggleChat()">✖</span>
       </div>
-      <div class="chat-body" id="chat-body">
-        <div class="chat-messages" id="chat-messages">
-          <div class="msg bot">Hello! How can I help?</div>
-        </div>
-        <div class="chat-input">
-          <input
-            type="text"
-            id="chat-input-text"
-            placeholder="Type here..."
-            onkeypress="handleChatKey(event)"
-          />
-          <button onclick="sendChatMessage()">
-            <i class="fas fa-paper-plane"></i>
-          </button>
-        </div>
+      <div class="chat-body" id="chatBody">
+        <div class="msg bot">Hello! How can I help?</div>
+      </div>
+      <div class="chat-input">
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Type here..."
+          onkeypress="handleChatKey(event)"
+        />
       </div>
     </div>
 

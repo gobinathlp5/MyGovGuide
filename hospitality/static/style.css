@@ -172,19 +172,77 @@ footer {
 }
 
 /* --- Chatbot --- */
-.chatbot-container {
-    position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 1000;
+.chat-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--gov-orange);
+  color: white;
+  padding: 15px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  font-size: 1.5rem;
+  z-index: 1001;
 }
+
+.chat-window {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  height: 400px;
+  background: white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1001;
+}
+
 .chat-header {
-    background: var(--gov-blue); color: white; padding: 10px;
-    border-radius: 10px 10px 0 0; cursor: pointer; display: flex;
-    justify-content: space-between;
+  background: var(--gov-blue);
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
 }
-.chat-body { background: white; border: 1px solid #ccc; height: 300px; display: none; flex-direction: column; }
-.chat-messages { flex: 1; padding: 10px; overflow-y: auto; background: #f9f9f9; text-align: left;}
-.chat-input { display: flex; border-top: 1px solid #eee; }
-.chat-input input { flex: 1; padding: 10px; border: none; outline: none; }
-.chat-input button { background: white; border: none; color: var(--gov-blue); padding: 0 15px; cursor: pointer; }
+.chat-body {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background: #f9f9f9;
+}
+.chat-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+.chat-input input {
+  border: none;
+  padding: 10px;
+  flex: 1;
+  margin: 0;
+  outline: none;
+}
+
+.msg {
+  padding: 8px 12px;
+  border-radius: 15px;
+  margin-bottom: 8px;
+  max-width: 80%;
+  font-size: 0.9rem;
+}
+.msg.bot {
+  background: #e0e0e0;
+  align-self: flex-start;
+}
+.msg.user {
+  background: #bbdefb;
+  align-self: flex-end;
+  margin-left: auto;
+}
 
 /* Spinner Helper */
 .hidden { display: none; }
