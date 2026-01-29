@@ -523,7 +523,7 @@
           "
         >
           <i class="fas fa-globe text-secondary"></i>
-          <select id="elect" onchange="changeLanguage()">
+          <select id="langSelect" onchange="changeLanguage()">
             <option value="en">English</option>
             <option value="hi">हिंदी</option>
             <option value="ta">தமிழ்</option>
@@ -1919,6 +1919,7 @@
 
         // Show typing indicator
         const typingId = addMsg("Typing...", "bot", true);
+        const typingMsg = document.getElementById(typingId);
 
         try {
           const response = await fetch("http://localhost:5000/api/chat", {
@@ -1927,22 +1928,40 @@
             body: JSON.stringify({ message: text }),
           });
 
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(
+              `HTTP error! status: ${response.status}, message: ${errorText}`,
+            );
+          }
+
           const data = await response.json();
 
           // Remove typing indicator
-          const typingMsg = document.getElementById(typingId);
           if (typingMsg) typingMsg.remove();
 
           if (data.success) {
             addMsg(data.reply, "bot");
           } else {
-            addMsg("Sorry, I encountered an error.", "bot");
+            addMsg(
+              "Sorry, an error occurred: " + (data.error || "Unknown error"),
+              "bot",
+            );
           }
         } catch (error) {
           console.error("Chat Error:", error);
-          const typingMsg = document.getElementById(typingId);
           if (typingMsg) typingMsg.remove();
-          addMsg("Connection error.", "bot");
+          let errorMessage =
+            "An unexpected error occurred. Please try again later.";
+          if (error instanceof TypeError) {
+            // Often indicates a network or CORS issue
+            errorMessage =
+              "Cannot connect to the chat server. Please ensure it's running and accessible.";
+          } else if (error.message.startsWith("HTTP error!")) {
+            errorMessage =
+              "The server returned an error. Please check the server logs.";
+          }
+          addMsg(errorMessage, "bot");
         }
       }
 
